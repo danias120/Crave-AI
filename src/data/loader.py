@@ -5,7 +5,8 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import pandas as pd
+import math
+import re
 
 from src.config import DATA_CACHE_DIR
 from src.models.restaurant import BudgetTier, Restaurant
@@ -19,9 +20,19 @@ DEFAULT_CACHE_FILE = DATA_CACHE_DIR / "restaurants.parquet"
 FALLBACK_CACHE_FILE = DATA_CACHE_DIR / "restaurants.json"
 
 
+def is_na(val: Any) -> bool:
+    """Check if value is None, NaN, or pandas NA without hard pandas dependency."""
+    if val is None:
+        return True
+    if isinstance(val, float) and (math.isnan(val) or math.isinf(val)):
+        return True
+    val_str = str(val).strip().lower()
+    return val_str in ("nan", "none", "<na>", "nat", "")
+
+
 def parse_rating(val: Any) -> Optional[float]:
     """Parse rating strings like '4.1/5', '4.1', or skip invalid values ('NEW', '-', None)."""
-    if val is None or pd.isna(val):
+    if is_na(val):
         return None
     val_str = str(val).strip()
     if val_str in ("", "-", "NEW", "nan", "None"):
@@ -39,7 +50,7 @@ def parse_rating(val: Any) -> Optional[float]:
 
 def parse_cost(val: Any) -> Optional[int]:
     """Parse approximate cost for two from formatted strings (e.g. '1,200', '800')."""
-    if val is None or pd.isna(val):
+    if is_na(val):
         return None
     val_str = str(val).replace(",", "").strip()
     if not val_str or val_str.lower() in ("nan", "none", "-"):
@@ -70,7 +81,7 @@ def determine_budget_tier(cost_for_two: Optional[int]) -> BudgetTier:
 
 def normalize_location(val: Any) -> str:
     """Normalize location string by trimming and standardizing title case."""
-    if val is None or pd.isna(val):
+    if is_na(val):
         return "Unknown"
     loc = str(val).strip()
     return loc if loc else "Unknown"
@@ -81,13 +92,10 @@ CUISINE_STANDARDIZATION: Dict[str, str] = {
     "afghani": "Afghani",
 }
 
-import re
-import numpy as np
-
 
 def clean_text(text: Any) -> str:
     """Repair mojibake encoding artifacts, remove spurious control chars, and normalize spaces."""
-    if text is None or pd.isna(text):
+    if is_na(text):
         return ""
     s = str(text)
     # Iterative latin-1 to utf-8 decode repair for multiply encoded strings
@@ -1352,7 +1360,7 @@ def normalize_cuisines(val: Any) -> List[str]:
 
     Combines synonyms (e.g. 'Afghan' -> 'Afghani').
     """
-    if val is None or pd.isna(val):
+    if is_na(val):
         return []
     if isinstance(val, list):
         items = val
@@ -1410,7 +1418,7 @@ def normalize_record(raw: Dict[str, Any], record_id: str) -> Optional[Restaurant
 
     votes = raw.get("votes")
     try:
-        votes_count = int(votes) if votes is not None and not pd.isna(votes) else 0
+        votes_count = int(votes) if not is_na(votes) else 0
     except (ValueError, TypeError):
         votes_count = 0
 
@@ -1455,20 +1463,27 @@ def normalize_record(raw: Dict[str, Any], record_id: str) -> Optional[Restaurant
 
 
 def save_to_cache(restaurants: List[Restaurant], cache_path: Path = DEFAULT_CACHE_FILE) -> None:
-    """Save processed restaurant records to local parquet or json cache."""
+    """Save processed restaurant records to local json or parquet cache."""
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     records = [r.model_dump() for r in restaurants]
-    df = pd.DataFrame(records)
 
+    # Save JSON cache directly (pure standard library)
+    json_path = cache_path.with_suffix(".json")
     try:
-        df.to_parquet(cache_path, index=False)
-        logger.info("Saved %d restaurants to parquet cache: %s", len(restaurants), cache_path)
-    except Exception as e:
-        logger.warning("Failed to save as parquet (%s), falling back to JSON...", e)
-        json_path = cache_path.with_suffix(".json")
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(records, f, indent=2, default=str)
         logger.info("Saved %d restaurants to JSON cache: %s", len(restaurants), json_path)
+    except Exception as e:
+        logger.warning("Failed saving JSON cache (%s)", e)
+
+    # Optionally save parquet if pandas is available
+    try:
+        import pandas as pd
+        df = pd.DataFrame(records)
+        df.to_parquet(cache_path, index=False)
+        logger.info("Saved %d restaurants to parquet cache: %s", len(restaurants), cache_path)
+    except Exception as e:
+        logger.debug("Parquet export skipped or failed (%s)", e)
 
 
 def _clean_cache_record(rec: Dict[str, Any]) -> Dict[str, Any]:
