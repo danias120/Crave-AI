@@ -1,0 +1,244 @@
+/* ===================================================================
+   Crave AI — Design System
+   Zomato-inspired dark theme derived from Stitch DESIGN.md tokens.
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* ───────── Design Tokens ───────── */
+:root {
+  /* Surfaces */
+  --background: #131313;
+  --surface: #131313;
+  --surface-dim: #131313;
+  --surface-container-lowest: #0e0e0e;
+  --surface-container-low: #1b1b1b;
+  --surface-container: #20201f;
+  --surface-container-high: #2a2a2a;
+  --surface-container-highest: #353535;
+  --surface-bright: #393939;
+
+  /* Brand */
+  --primary: #ffb3af;
+  --primary-container: #cb202d;
+  --secondary: #ffb59d;
+  --secondary-container: #b83900;
+  --tertiary: #e9c400;
+  --tertiary-container: #c9a900;
+
+  /* Text */
+  --on-surface: #e5e2e1;
+  --on-surface-variant: #e4bdbb;
+  --on-primary: #68000d;
+  --on-primary-container: #ffe2e0;
+
+  /* Borders */
+  --outline: #ab8886;
+  --outline-variant: #5b403e;
+
+  /* Errors */
+  --error: #ffb4ab;
+  --error-container: #93000a;
+
+  /* Functional */
+  --gold: #FFD700;
+
+  /* Spacing (4px base) */
+  --sp-xs: 8px;
+  --sp-sm: 12px;
+  --sp-md: 16px;
+  --sp-lg: 24px;
+  --sp-xl: 40px;
+  --container-max: 1280px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --glow-primary: 0 0 40px rgba(203, 32, 45, 0.15);
+  --glow-primary-strong: 0 0 60px rgba(203, 32, 45, 0.25);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ───────── Reset & Base ───────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+::selection {
+  background: var(--primary-container);
+  color: white;
+}
+
+/* ───────── Typography ───────── */
+.headline-xl {
+  font-family: 'Outfit', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 44px;
+  letter-spacing: -0.02em;
+}
+
+.headline-lg {
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.body-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.body-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.label-bold {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ───────── Utility Classes ───────── */
+.brand-gradient-text {
+  background: linear-gradient(90deg, var(--primary-container), var(--secondary-container));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.brand-gradient-bg {
+  background: linear-gradient(90deg, var(--primary-container), var(--secondary-container));
+}
+
+.glass-panel {
+  background: rgba(42, 42, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glow-effect {
+  box-shadow: var(--glow-primary);
+}
+
+/* ───────── Material Icons ───────── */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ───────── Container ───────── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--sp-lg);
+  padding-right: var(--sp-lg);
+}
+
+/* ───────── Scrollbar ───────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-container-lowest);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-container-highest);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--outline);
+}
+
+/* ───────── Animations ───────── */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: var(--glow-primary); }
+  50% { box-shadow: var(--glow-primary-strong); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-container-high);
+  border-radius: var(--radius);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.04),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}

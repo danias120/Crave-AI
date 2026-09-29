@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crave AI - Your AI-powered food discovery engine</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Outfit:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "primary-container": "#cb202d",
+                            "secondary-container": "#b83900",
+                            "on-primary-container": "#ffe2e0",
+                            "on-secondary-fixed-variant": "#832600",
+                            "inverse-primary": "#bc1124",
+                            "on-tertiary-fixed": "#221b00",
+                            "on-tertiary": "#3a3000",
+                            "surface-container-lowest": "#0e0e0e",
+                            "error-container": "#93000a",
+                            "tertiary": "#e9c400",
+                            "surface-bright": "#393939",
+                            "error": "#ffb4ab",
+                            "on-surface-variant": "#e4bdbb",
+                            "surface-dim": "#131313",
+                            "primary-fixed": "#ffdad7",
+                            "on-primary-fixed-variant": "#930017",
+                            "surface-tint": "#ffb3af",
+                            "tertiary-fixed": "#ffe16d",
+                            "background": "#131313",
+                            "surface": "#131313",
+                            "primary": "#ffb3af",
+                            "tertiary-fixed-dim": "#e9c400",
+                            "on-primary": "#68000d",
+                            "on-error-container": "#ffdad6",
+                            "on-secondary": "#5d1900",
+                            "on-background": "#e5e2e1",
+                            "on-surface": "#e5e2e1",
+                            "surface-variant": "#353535",
+                            "surface-container-high": "#2a2a2a",
+                            "on-tertiary-container": "#4c3e00",
+                            "secondary-fixed-dim": "#ffb59d",
+                            "secondary": "#ffb59d",
+                            "on-tertiary-fixed-variant": "#544600",
+                            "inverse-on-surface": "#313030",
+                            "on-secondary-fixed": "#390c00",
+                            "primary-fixed-dim": "#ffb3af",
+                            "on-primary-fixed": "#410005",
+                            "tertiary-container": "#c9a900",
+                            "outline": "#ab8886",
+                            "surface-container-highest": "#353535",
+                            "surface-container-low": "#1b1b1b",
+                            "on-secondary-container": "#ffddd2",
+                            "inverse-surface": "#e5e2e1",
+                            "on-error": "#690005",
+                            "surface-container": "#20201f",
+                            "secondary-fixed": "#ffdbd0",
+                            "outline-variant": "#5b403e"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "lg": "24px",
+                            "xs": "8px",
+                            "gutter": "20px",
+                            "sm": "12px",
+                            "base": "4px",
+                            "md": "16px",
+                            "container-max": "1280px",
+                            "xl": "40px"
+                    },
+                    "fontFamily": {
+                            "label-bold": [
+                                    "Inter"
+                            ],
+                            "body-md": [
+                                    "Inter"
+                            ],
+                            "headline-xl": [
+                                    "Outfit"
+                            ],
+                            "body-sm": [
+                                    "Inter"
+                            ],
+                            "headline-lg": [
+                                    "Outfit"
+                            ],
+                            "headline-xl-mobile": [
+                                    "Outfit"
+                            ]
+                    },
+                    "fontSize": {
+                            "label-bold": [
+                                    "12px",
+                                    {
+                                            "lineHeight": "16px",
+                                            "letterSpacing": "0.05em",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "body-md": [
+                                    "16px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "headline-xl": [
+                                    "36px",
+                                    {
+                                            "lineHeight": "44px",
+                                            "letterSpacing": "-0.02em",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "body-sm": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "headline-lg": [
+                                    "24px",
+                                    {
+                                            "lineHeight": "32px",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "headline-xl-mobile": [
+                                    "28px",
+                                    {
+                                            "lineHeight": "34px",
+                                            "letterSpacing": "-0.01em",
+                                            "fontWeight": "700"
+                                    }
+                            ]
+                    }
+            },
+                },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .glass-panel {
+                @apply bg-surface-container-high/80 backdrop-blur-xl border border-white/5;
+            }
+            .brand-gradient-text {
+                @apply bg-gradient-to-r from-primary-container to-secondary-container bg-clip-text text-transparent;
+            }
+            .glow-effect {
+                box-shadow: 0 0 40px rgba(203, 32, 45, 0.15);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-white">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg py-sm max-w-container-max mx-auto bg-background/80 backdrop-blur-md dark:bg-background/80 shadow-sm border-b border-white/5">
+<div class="flex items-center gap-xl">
+<a class="font-headline-xl text-headline-xl font-bold bg-gradient-to-r from-primary-container to-secondary-container bg-clip-text text-transparent transition-all active:scale-95 hover:opacity-90" href="#">
+                Crave AI
+            </a>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-primary font-bold border-b-2 border-primary-container pb-1 transition-all active:scale-95" href="#">
+                    Discover
+                </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 transition-all active:scale-95" href="#">
+                    Trending
+                </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 transition-all active:scale-95" href="#">
+                    Favorites
+                </a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex items-center glass-panel rounded-full px-sm py-xs">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] mr-2">search</span>
+<input class="bg-transparent border-none text-body-sm text-on-surface focus:ring-0 w-32 placeholder-on-surface-variant/50" placeholder="Search cravings..." type="text"/>
+</div>
+<button class="font-label-bold text-label-bold bg-surface-container-high text-on-surface hover:bg-surface-variant px-md py-xs rounded-full border border-white/5 transition-all active:scale-95">
+                Sign In
+            </button>
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[100px] pb-xl px-lg md:px-xl max-w-container-max mx-auto w-full flex flex-col gap-xl">
+<!-- Hero Section -->
+<section class="flex flex-col items-center justify-center py-xl mt-lg relative w-full rounded-[32px] overflow-hidden min-h-[400px]">
+<!-- Decorative Background Glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary-container/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="relative z-10 flex flex-col items-center text-center max-w-3xl px-lg">
+<h1 class="font-headline-xl text-headline-xl md:text-[56px] md:leading-[64px] font-bold mb-md">
+                    Find exactly what you <br class="hidden md:block"/>
+<span class="brand-gradient-text">Crave AI</span>
+</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mb-xl max-w-lg">
+                    Your AI-powered food discovery engine 🍽️
+                </p>
+<!-- AI Search Input -->
+<div class="w-full max-w-2xl relative group glow-effect rounded-full transition-all duration-500 hover:shadow-[0_0_60px_rgba(203,32,45,0.25)]">
+<div class="absolute inset-0 bg-gradient-to-r from-primary-container to-secondary-container rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+<div class="relative flex items-center glass-panel rounded-full p-2 pl-xl border border-white/10 overflow-hidden bg-surface-container-high/90">
+<span class="material-symbols-outlined text-tertiary text-[28px] mr-sm animate-pulse" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<input class="w-full bg-transparent border-none text-body-md text-on-surface focus:ring-0 placeholder-on-surface-variant/50 h-12 outline-none" placeholder="I'm craving spicy ramen in a cozy spot..." type="text"/>
+<button class="bg-gradient-to-r from-primary-container to-secondary-container text-white px-xl py-sm rounded-full font-label-bold text-label-bold hover:opacity-90 transition-all active:scale-95 h-12 whitespace-nowrap ml-sm flex items-center gap-xs">
+                            Discover <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Section (Bento Grid) -->
+<section class="flex flex-col gap-lg w-full mt-xl">
+<div class="flex items-center justify-between mb-sm">
+<h2 class="font-headline-lg text-headline-lg text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                    Trending Discoveries
+                </h2>
+<a class="font-label-bold text-label-bold text-primary hover:text-primary-container transition-colors" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg lg:gap-xl">
+<!-- Large Featured Card (Spans 2 columns on desktop) -->
+<article class="md:col-span-2 group relative rounded-2xl overflow-hidden glass-panel h-[400px] flex flex-col justify-end transition-transform duration-300 hover:-translate-y-1">
+<div class="absolute inset-0">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" data-alt="A cinematic, high-resolution shot of a bustling upscale Indian restaurant called 'The Spice Room'. The scene features vibrant copper bowls filled with rich, red curries and fluffy naan bread on a dark wooden table. Dramatic, moody lighting highlights the steam rising from the hot food. The atmosphere is energetic and premium, reflecting a sleek dark mode aesthetic with deep shadows and vibrant culinary colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApCd6CXU1RXELh-791zgSTZz-_NdoF7PWIlAykDv1fzhZJPFpVQtIs4BSgcuFziLxaeeGxMm4S1M5-ydH3CsH-xMXv3KSqaZAHLFKSilfbO1JSfaoIcyhk52vbh_-sceZEfmvsT341l-zltAL6B9LK0FIIzxmpJ-Yov-JtpAIEAcN3GmicsANwv7v1dSEAlIQMrgS09DIZ9T6Rg6QXBEsYGrFGdztJo0U01wnE8YPlzCgPEDnkn8r2Yw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+</div>
+<div class="relative z-10 p-lg w-full flex justify-between items-end">
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-sm mb-xs">
+<span class="bg-tertiary/10 text-tertiary px-sm py-[2px] rounded-full font-label-bold text-label-bold flex items-center gap-[2px] backdrop-blur-md border border-tertiary/20">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.8
+                                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm bg-surface-container-high/50 px-sm py-[2px] rounded-full backdrop-blur-md border border-white/10">Indian • Upscale</span>
+</div>
+<h3 class="font-headline-xl text-headline-xl text-white">The Spice Room</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">location_on</span> Downtown • $80 for two
+                            </p>
+</div>
+<button class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-on-surface hover:text-primary-container transition-colors group/btn">
+<span class="material-symbols-outlined group-hover/btn:scale-110 transition-transform">favorite</span>
+</button>
+</div>
+</article>
+<!-- Regular Card 1 -->
+<article class="group relative rounded-2xl overflow-hidden glass-panel h-[400px] flex flex-col transition-transform duration-300 hover:-translate-y-1">
+<div class="h-[220px] relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A mouth-watering, close-up shot of a massive, gourmet burger from 'Urban Burger'. The burger features a thick, juicy beef patty, melting cheddar cheese, crispy bacon, and fresh lettuce on a toasted brioche bun. The background is a dark, sleek, slightly blurred modern diner setting. The lighting is focused and appetizing, making the textures of the food pop against the dark mode UI environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxPxUj2AeA_VJzbvnAY3gLa6TokXmz8LB-e7yqQSNAgIhozv5b_3PBWlPqt3DvJFwpN7g04KVF_407UMiaah6BWTW4svmwKVUVr_mazMhp_kwsSn0S61YB8hqOuWGpm15Cwugu-gSa6HU5ZPoNITiXb8dEU-yfD6M0SXO94fZ_ffo8DWP7rd_yeQx5g7FYqsv23gvBJ-U0FpadEASBp505wHfJQ5SXY4RmH6TVGQjlhf7zXNXaqezIcw"/>
+<div class="absolute top-sm right-sm bg-tertiary/90 text-on-tertiary px-sm py-[2px] rounded-full font-label-bold text-label-bold flex items-center gap-[2px] shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.5
+                        </div>
+</div>
+<div class="p-md flex flex-col flex-grow justify-between bg-surface-container-high/50">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Urban Burger</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Artisanal smash burgers with house-made sauces and truffle fries.</p>
+</div>
+<div class="flex items-center justify-between mt-sm pt-sm border-t border-white/5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">American • $35 for two</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">bookmark_add</span></button>
+</div>
+</div>
+</article>
+<!-- Regular Card 2 -->
+<article class="group relative rounded-2xl overflow-hidden glass-panel h-[320px] flex flex-col transition-transform duration-300 hover:-translate-y-1">
+<div class="h-[180px] relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="An elegant, minimalist composition of assorted premium sushi and sashimi from 'Sushi Zen'. The raw fish is brightly colored—vibrant salmon orange and deep tuna red—arranged meticulously on a dark slate board. The lighting is soft and directional, highlighting the freshness of the seafood. The overall aesthetic is clean, precise, and perfectly suited for a high-end dark mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtFP2TAPuHQRcnhzJqS3cwojBNHazQ5J4rVK-F9HYoCZ3itx0o5AX4qY35EIk7wbvlmzdP4LV3ymB8NzU98GmpyAWMoJJuyQqg8PaZDz4vu_Y0hPhAVce_LHVDZlLHNX76F2DuSomQVKFh1Q-rHGo7Y0Zs1_eL3kNn4g1ns2jxGwK8FZRxU6ZXRm0Nq5RTsFT5kKeWtM_50GPMZvgPEKYVqE3dV-mc6GQyc7JYC-TxN9XvZxrXqw-TTQ"/>
+<div class="absolute top-sm right-sm bg-tertiary/90 text-on-tertiary px-sm py-[2px] rounded-full font-label-bold text-label-bold flex items-center gap-[2px] shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
+                        </div>
+</div>
+<div class="p-md flex flex-col flex-grow justify-between bg-surface-container-high/50">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Sushi Zen</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Authentic omakase experience.</p>
+</div>
+<div class="flex items-center justify-between mt-sm pt-sm border-t border-white/5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Japanese • $120 for two</span>
+</div>
+</div>
+</article>
+<!-- Regular Card 3 -->
+<article class="group relative rounded-2xl overflow-hidden glass-panel h-[320px] flex flex-col transition-transform duration-300 hover:-translate-y-1">
+<div class="h-[180px] relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A comforting, rustic shot of a steaming bowl of fresh handmade pasta from 'Pasta Palace'. The pasta is coated in a rich, glossy red tomato sauce, garnished with fresh green basil leaves and a heavy dusting of parmesan cheese. The bowl sits on a dark, textured wooden table. The lighting feels warm and inviting, providing a vibrant contrast against the deep dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACf3ioFxbwkRwPH3NaTHApypOyr9sgJ4w6Kq_I0eIOfYp0wt_lsHBdVm1TJAnyIPHpLmtqNA9qzuA1-3JEApAsxOeC_KHKcLkBM6ltsuvlB1xXKITy4fb2tnJQgndL9_PXRWjez-Sd9ZjIU5Tn5XG6lWm2gxihVo294LUqjo9GtoWsEgSr4qeOjPPApXBwIvxF320bd7Y-jhgs_J6XUh_TLgUletyeLwB1SDcMrvekotnWv-CvomUW0w"/>
+<div class="absolute top-sm right-sm bg-tertiary/90 text-on-tertiary px-sm py-[2px] rounded-full font-label-bold text-label-bold flex items-center gap-[2px] shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.6
+                        </div>
+</div>
+<div class="p-md flex flex-col flex-grow justify-between bg-surface-container-high/50">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Pasta Palace</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Handmade daily, classic recipes.</p>
+</div>
+<div class="flex items-center justify-between mt-sm pt-sm border-t border-white/5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Italian • $50 for two</span>
+</div>
+</div>
+</article>
+<!-- Regular Card 4 -->
+<article class="group relative rounded-2xl overflow-hidden glass-panel h-[320px] flex flex-col transition-transform duration-300 hover:-translate-y-1">
+<div class="h-[180px] relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A bright, healthy overhead shot of a vibrant grain bowl from 'Green Bowl'. The bowl is packed with colorful ingredients: bright green avocado, roasted sweet potatoes, quinoa, and a drizzle of creamy tahini dressing. The surface below is a dark matte slate. The lighting is crisp and natural, making the fresh colors pop intensely within a sleek, modern dark mode design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHoWh0aXJHPHWC9IKpeBOsxSLuq9igHWm3QKfPt3kSJ_qYZtnCT5pYkHmqmPZhYyKx9JpwQXHmXs7PA9ejDexof-tyX4k-nfUFCPx4e65SzMQJz4Wkh6FvKo3-dr2GkSwm-S80oifGl-K671bILzoFnPKJVQEgE12Df-TjwOXhpxyt5HYiZZDzha05O-VibwBrFjUsDDgJ-mJB3ecG2iYty-2nNXALLap2fszOhQetvZL3_hty843svg"/>
+<div class="absolute top-sm right-sm bg-tertiary/90 text-on-tertiary px-sm py-[2px] rounded-full font-label-bold text-label-bold flex items-center gap-[2px] shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.7
+                        </div>
+</div>
+<div class="p-md flex flex-col flex-grow justify-between bg-surface-container-high/50">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Green Bowl</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Nourishing, organic plant-based bowls.</p>
+</div>
+<div class="flex items-center justify-between mt-sm pt-sm border-t border-white/5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Healthy • $30 for two</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full px-lg py-xl flex flex-col md:flex-row justify-between items-center gap-md bg-surface-container-lowest dark:bg-surface-container-lowest mt-xl border-t border-white/5">
+<div class="font-headline-lg text-headline-lg font-bold text-on-surface">
+            Crave AI
+        </div>
+<nav class="flex flex-wrap justify-center gap-md">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container transition-colors" href="#">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container transition-colors" href="#">Contact</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container transition-colors" href="#">Partners</a>
+</nav>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+            © 2024 Crave AI. Engineered for Taste.
+        </div>
+</footer>
+</body></html>
