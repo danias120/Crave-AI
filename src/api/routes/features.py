@@ -28,7 +28,7 @@ from src.services.features_service import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api", tags=["Advanced Features"])
+router = APIRouter(tags=["Advanced Features"])
 
 
 @router.post("/dish-search", response_model=DishSearchResponse)

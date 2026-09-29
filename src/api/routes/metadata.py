@@ -10,7 +10,7 @@ from src.data.store import RestaurantStore
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api", tags=["metadata"])
+router = APIRouter(tags=["metadata"])
 
 
 @router.get("/health", summary="Health check")

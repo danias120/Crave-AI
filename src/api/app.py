@@ -42,9 +42,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register routers
+# Register routers for both /api and non-prefixed paths (serverless compatibility)
+app.include_router(metadata_router, prefix="/api")
 app.include_router(metadata_router)
+
+app.include_router(recommendations_router, prefix="/api")
 app.include_router(recommendations_router)
+
+app.include_router(features_router, prefix="/api")
 app.include_router(features_router)
 
 
