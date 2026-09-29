@@ -29,5 +29,6 @@ except Exception as e:
             },
         )
 
-# Export ASGI app for Vercel
-__all__ = ["app"]
+# Export ASGI app and handler for universal Vercel Python runtime compatibility
+handler = app
+__all__ = ["app", "handler"]
