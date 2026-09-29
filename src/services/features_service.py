@@ -245,21 +245,107 @@ def spin_roulette_service(store: RestaurantStore, req: RouletteRequest) -> Roule
 # ============================================================================
 # 4. GROUP DINING SOLVER
 # ============================================================================
+NON_VEG_WORDS = {
+    "chicken", "mutton", "pork", "beef", "duck", "fish", "prawn", "prawns", "shrimp",
+    "seafood", "wings", "meat", "egg", "eggs", "lamb", "bacon", "pepperoni", "ham",
+    "char siu", "sea bass", "bass", "salmon", "tuna", "crab", "lobster", "squid",
+    "calamari", "octopus", "anchovy", "steak", "ribs", "salami", "prosciutto",
+    "turkey", "sausage", "veal", "venison"
+}
+NON_HALAL_WORDS = {"pork", "bacon", "ham", "beer", "cocktail", "wine", "alcohol", "lard", "char siu"}
+DAIRY_WORDS = {"cheese", "paneer", "milk", "butter", "ghee", "cream", "ice cream", "curd", "yogurt", "shake", "fudge", "parmesan", "mozzarella"}
+
+CRAVING_SYNONYMS = {
+    "burger": ["burger", "sliders", "sandwich", "fries", "patty", "wrap", "fast food"],
+    "pasta": ["pasta", "lasagna", "spaghetti", "penne", "alfredo", "arrabiata", "ravioli", "macaroni", "risotto", "italian"],
+    "pizza": ["pizza", "woodfired", "slice", "margherita", "garlic bread", "calzone", "sourdough", "italian"],
+    "italian": ["pasta", "pizza", "lasagna", "risotto", "tiramisu", "bruschetta", "ravioli"],
+    "biryani": ["biryani", "pulao", "rice", "mandi", "dum biryani", "rice bowl", "mughlai", "hyderabadi"],
+    "kebab": ["kebab", "tikka", "grill", "bbq", "shawarma", "tandoori", "sheekh", "seekh", "kheema", "mughlai"],
+    "mughlai": ["biryani", "kebab", "butter chicken", "rogan josh", "naan", "tikka", "kheema"],
+    "south indian": ["dosa", "idli", "vada", "uttapam", "sambar", "filter coffee", "thali"],
+    "asian": ["ramen", "dim sum", "momo", "momos", "noodle", "noodles", "sushi", "bao", "pad thai", "fried rice"],
+    "chinese": ["noodle", "noodles", "manchurian", "fried rice", "dim sum", "momos", "chilli chicken", "spring roll"],
+    "healthy": ["salad", "bowl", "grain bowl", "quinoa", "smoothie", "tofu", "wrap", "avocado", "greens"],
+    "vegan": ["salad", "vegan", "dairy-free", "tofu", "grain bowl", "sorbet", "hummus", "fruit bowl", "avocado"],
+    "dessert": ["cheesecake", "tiramisu", "brownie", "ice cream", "fudge", "cake", "waffle", "crepe", "sundae", "pastry"],
+    "sweet": ["cheesecake", "tiramisu", "brownie", "ice cream", "fudge", "cake", "waffle", "crepe", "sundae"],
+    "beverage": ["craft beverage", "brew", "coffee", "shake", "mocktail", "cocktail", "smoothie", "boba", "tea", "beer"],
+    "shawarma": ["shawarma", "falafel", "roll", "wrap", "hummus", "arabian"],
+    "mandi": ["mandi", "biryani", "rice platter", "kabsa", "arabian"],
+    "dosa": ["dosa", "benne dosa", "ghee dosa", "masala dosa", "tiffin", "south indian"],
+}
+
+CUISINE_FALLBACK_DISHES = {
+    "italian": {
+        "veg": "Woodfired Margherita Pizza & Creamy Penne Alfredo",
+        "vegan": "Penne all'Arrabbiata & Fresh Tomato Bruschetta",
+        "halal": "Smoked Chicken Pasta or BBQ Chicken Pizza",
+        "any": "Woodfired Gourmet Pizza & Creamy Carbonara",
+    },
+    "american": {
+        "veg": "Crispy Veggie & Cheese Burger with Seasoned Fries",
+        "vegan": "Garden Veggie Patty Burger & Crisp Fries",
+        "halal": "Crispy Grilled Chicken Burger with Hand-Cut Fries",
+        "any": "All-American Gourmet Bacon/Cheeseburger & Fries",
+    },
+    "cafe": {
+        "veg": "Gourmet Cheesy Club Sandwich & Iced Latte",
+        "vegan": "Mediterranean Quinoa & Fresh Avocado Salad Bowl",
+        "halal": "Grilled Chicken Panini & Artisanal Cold Brew",
+        "any": "Signature Cafe Club Sandwich & Craft Shake",
+    },
+    "north indian": {
+        "veg": "Paneer Butter Masala with Butter Garlic Naan",
+        "vegan": "Dal Tadka with Steamed Basmati Rice & Roti",
+        "halal": "Smoky Chicken Tikka & Fragrant Dum Biryani",
+        "any": "Mughlai Butter Chicken & Tandoori Murgh",
+    },
+    "south indian": {
+        "veg": "Crispy Ghee Masala Dosa with Sambar & Chutneys",
+        "vegan": "Steamed Rice Idlis & Coconut Sambar Platter",
+        "halal": "Kerala Style Chicken Roast & Parotta",
+        "any": "Signature Benne Dosa & Filter Coffee",
+    },
+    "chinese": {
+        "veg": "Veg Hakka Noodles & Steamed Veg Dim Sums",
+        "vegan": "Wok-Tossed Chilli Garlic Noodles & Steamed Veg Momos",
+        "halal": "Chicken Manchurian with Egg Fried Rice",
+        "any": "Crispy Chilli Chicken & Wok-Tossed Hakka Noodles",
+    },
+    "asian": {
+        "veg": "Steamed Vegetable Dim Sum & Rich Veg Ramen",
+        "vegan": "Tofu & Shiitake Mushroom Pad Thai",
+        "halal": "Chicken Teriyaki Rice Bowl & Steamed Gyoza",
+        "any": "Authentic Tonkotsu Pork/Chicken Ramen & Gyoza",
+    },
+    "desserts": {
+        "veg": "Signature Warm Chocolate Brownie with Hot Fudge",
+        "vegan": "Fresh Seasonal Fruit Bowl & Dairy-Free Sorbet",
+        "halal": "Classic Tiramisu & Rich Belgian Waffle",
+        "any": "Signature Sundae & Warm Belgium Waffle",
+    },
+    "continental": {
+        "veg": "Baked Cheesy Lasagna & Garlic Herb Toast",
+        "vegan": "Grilled Herb Vegetables & Quinoa Pilaf",
+        "halal": "Grilled Herb Chicken Steak with Mash & Pepper Sauce",
+        "any": "Signature Grilled Steak with Sautéed Veggies",
+    },
+    "biryani": {
+        "veg": "Hyderabadi Dum Veg Biryani with Mirchi ka Salan",
+        "vegan": "Fragrant Vegetable Pulao with Fresh Mint",
+        "halal": "Authentic Dum Chicken/Mutton Biryani",
+        "any": "Special Hyderabadi Dum Biryani with Salan",
+    },
+}
+
+
 def solve_group_dining_service(
     store: RestaurantStore, req: GroupDiningRequest
 ) -> GroupDiningResponse:
     """Find multi-cuisine restaurants that satisfy conflicting group preferences."""
     all_rests = store.get_all()
     scored_matches: List[GroupMatch] = []
-
-    NON_VEG_WORDS = {
-        "chicken", "mutton", "pork", "beef", "duck", "fish", "prawn", "prawns", "shrimp",
-        "seafood", "wings", "meat", "egg", "eggs", "lamb", "bacon", "pepperoni", "ham",
-        "char siu", "sea bass", "bass", "salmon", "tuna", "crab", "lobster", "squid",
-        "calamari", "octopus", "anchovy", "steak", "ribs", "salami", "prosciutto",
-        "turkey", "sausage", "veal", "venison"
-    }
-    NON_HALAL_WORDS = {"pork", "bacon", "ham", "beer", "cocktail", "wine", "alcohol", "lard", "char siu"}
 
     for r in all_rests:
         if req.location and not matches_location(r.location, req.location, r.address, allow_clusters=True):
@@ -269,8 +355,11 @@ def solve_group_dining_service(
         dish_liked_raw = str(raw_dict.get("dish_liked") or "")
         dish_list = [d.strip() for d in dish_liked_raw.split(",") if d.strip()]
 
+        cuisines_lower = [c.lower() for c in r.cuisines]
         satisfactions: List[MemberSatisfaction] = []
         satisfied_count = 0
+        craving_hits = 0
+        used_dishes: Set[str] = set()
 
         for m in req.members:
             diet = (m.diet or "").lower()
@@ -283,60 +372,96 @@ def solve_group_dining_service(
             is_halal = "halal" in diet
             is_vegan = "vegan" in diet
 
-            if is_pure_veg and not r.is_veg and not any(c.lower() in ("north indian", "south indian", "chinese", "italian", "cafe", "desserts", "bakery", "continental", "pizza", "biryani", "fast food") for c in r.cuisines):
+            # Dietary Feasibility Check
+            if is_pure_veg and not r.is_veg and not any(c in ("north indian", "south indian", "chinese", "italian", "cafe", "desserts", "bakery", "continental", "pizza", "biryani", "fast food", "beverages") for c in cuisines_lower):
                 sat = False
                 dish_desc = "Limited vegetarian options"
             elif is_halal and not r.is_halal:
                 sat = False
                 dish_desc = "Non-Halal certified"
-            elif is_vegan and not any(c.lower() in ("cafe", "salads", "healthy food", "south indian", "asian", "beverages", "desserts") for c in r.cuisines):
+            elif is_vegan and all(c in ("ice cream", "desserts", "bakery") for c in cuisines_lower) and not r.is_veg:
                 sat = False
                 dish_desc = "Limited vegan/dairy-free options"
-            else:
-                # Find best dish matching dietary rule and craving
-                craving_keywords = [
+            elif is_vegan and not any(c in ("cafe", "salads", "healthy food", "south indian", "asian", "beverages", "chinese", "italian", "continental") for c in cuisines_lower):
+                sat = False
+                dish_desc = "Limited vegan options"
+
+            if sat:
+                # 1. Expand craving keywords
+                craving_tokens = [
                     w.strip().lower()
                     for w in craving.replace(",", " ").replace(" or ", " ").replace(" and ", " ").split()
                     if len(w.strip()) > 2
                 ]
+                expanded_keywords: Set[str] = set(craving_tokens)
+                for tok in craving_tokens:
+                    for syn_key, syn_list in CRAVING_SYNONYMS.items():
+                        if syn_key in tok or tok in syn_key:
+                            expanded_keywords.update(syn_list)
 
-                # 1. Look for craving match in dish_liked that satisfies diet
+                # 2. Search for a distinct matching dish in dish_list
                 matched_dish = None
                 for dish in dish_list:
-                    dish_lower = dish.lower()
-                    if is_pure_veg and any(nw in dish_lower for nw in NON_VEG_WORDS):
+                    d_lower = dish.lower()
+                    if d_lower in used_dishes:
                         continue
-                    if is_halal and any(nh in dish_lower for nh in NON_HALAL_WORDS):
+                    if is_pure_veg and any(nw in d_lower for nw in NON_VEG_WORDS):
                         continue
-                    if craving_keywords and any(kw in dish_lower for kw in craving_keywords):
+                    if is_vegan and (any(nw in d_lower for nw in NON_VEG_WORDS) or any(dw in d_lower for dw in DAIRY_WORDS)):
+                        continue
+                    if is_halal and any(nh in d_lower for nh in NON_HALAL_WORDS):
+                        continue
+                    
+                    # Check if matches member's craving
+                    if expanded_keywords and any(kw in d_lower for kw in expanded_keywords):
                         matched_dish = f"Specialty: {dish}"
+                        used_dishes.add(d_lower)
+                        craving_hits += 1
                         break
 
-                # 2. Look for any diet-safe dish from dish_liked
+                # 3. If no craving match in dish_list, pick an unused diet-safe dish from dish_list
                 if not matched_dish:
                     for dish in dish_list:
-                        dish_lower = dish.lower()
-                        if is_pure_veg and any(nw in dish_lower for nw in NON_VEG_WORDS):
+                        d_lower = dish.lower()
+                        if d_lower in used_dishes:
                             continue
-                        if is_halal and any(nh in dish_lower for nh in NON_HALAL_WORDS):
+                        if is_pure_veg and any(nw in d_lower for nw in NON_VEG_WORDS):
                             continue
-                        matched_dish = f"Can enjoy {dish}"
+                        if is_vegan and (any(nw in d_lower for nw in NON_VEG_WORDS) or any(dw in d_lower for dw in DAIRY_WORDS)):
+                            continue
+                        if is_halal and any(nh in d_lower for nh in NON_HALAL_WORDS):
+                            continue
+                        
+                        matched_dish = f"Specialty: {dish}"
+                        used_dishes.add(d_lower)
                         break
 
-                # 3. Fallback to cuisine/craving representation
-                if matched_dish:
-                    dish_desc = matched_dish
-                elif craving and any(craving in c.lower() or c.lower() in craving for c in r.cuisines):
-                    dish_desc = f"Serves loved {m.craving.title()} cuisine"
-                elif is_pure_veg:
-                    dish_desc = f"Vegetarian specialties in {', '.join(r.cuisines[:2])}"
-                elif is_halal:
-                    dish_desc = f"Halal menu items across {', '.join(r.cuisines[:2])}"
-                else:
-                    first_c = r.cuisines[0] if r.cuisines else "dining"
-                    dish_desc = f"Great {first_c} selections"
+                # 4. If still no dish or dish_list exhausted, use intelligent cuisine fallback
+                if not matched_dish:
+                    # Find matching cuisine category
+                    target_cuisine = None
+                    for c_key in CUISINE_FALLBACK_DISHES:
+                        if c_key in cuisines_lower or any(kw in c_key for kw in expanded_keywords):
+                            target_cuisine = c_key
+                            break
+                    if not target_cuisine and cuisines_lower:
+                        target_cuisine = cuisines_lower[0]
 
-            if sat:
+                    diet_key = "vegan" if is_vegan else ("veg" if is_pure_veg else ("halal" if is_halal else "any"))
+                    cuisine_options = CUISINE_FALLBACK_DISHES.get(target_cuisine, {})
+                    dish_text = cuisine_options.get(diet_key) or cuisine_options.get("any")
+
+                    if dish_text and dish_text.lower() not in used_dishes:
+                        matched_dish = f"Can enjoy {dish_text}"
+                        used_dishes.add(dish_text.lower())
+                        if any(kw in dish_text.lower() for kw in expanded_keywords):
+                            craving_hits += 1
+                    elif craving:
+                        matched_dish = f"Customizable: {m.craving.title()} option"
+                    else:
+                        matched_dish = f"Chef's {diet_key.title()} Selection"
+
+                dish_desc = matched_dish
                 satisfied_count += 1
 
             satisfactions.append(
@@ -348,10 +473,13 @@ def solve_group_dining_service(
             )
 
         total_members = max(len(req.members), 1)
-        harmony_score = int((satisfied_count / total_members) * 100)
-        quality_score = int(harmony_score * 0.7 + ((r.rating or 4.0) / 5.0) * 30)
+        diet_score = (satisfied_count / total_members) * 100
+        craving_ratio = (craving_hits / total_members) if total_members else 0.0
+        
+        # Quality score factors: 60% diet satisfaction, 25% craving matches, 15% restaurant rating
+        combined_score = int(diet_score * 0.60 + craving_ratio * 25 + ((r.rating or 4.0) / 5.0) * 15)
 
-        if harmony_score >= 50:
+        if diet_score >= 50:
             why_good = (
                 f"{r.name} in {r.location} ({r.rating:.1f}★) features a versatile multi-cuisine menu "
                 f"covering {', '.join(r.cuisines[:3])}, accommodating diverse dietary preferences with approx ₹{r.cost_for_two or 600} for two."
@@ -360,34 +488,52 @@ def solve_group_dining_service(
                 GroupMatch(
                     rank=0,
                     restaurant=r,
-                    harmony_score=min(100, max(50, quality_score)),
+                    harmony_score=min(100, max(50, combined_score)),
                     satisfactions=satisfactions,
                     why_good_for_group=why_good,
                 )
             )
 
-    # If no matches in location, relax location constraint
+    # Fallback if no spots matched
     if not scored_matches and all_rests:
-        for r in all_rests[:10]:
-            satisfactions = [
-                MemberSatisfaction(
-                    member_name=m.name or "Friend",
-                    satisfied=True,
-                    what_they_eat=f"Multi-cuisine selection ({', '.join(r.cuisines[:2])})",
+        for r in all_rests[:6]:
+            cuisines_lower = [c.lower() for c in r.cuisines]
+            fallback_satisfactions = []
+            used_fallback_dishes = set()
+            for m in req.members:
+                diet = (m.diet or "").lower()
+                is_pure_veg = "veg" in diet and "non" not in diet
+                is_vegan = "vegan" in diet
+                is_halal = "halal" in diet
+                diet_key = "vegan" if is_vegan else ("veg" if is_pure_veg else ("halal" if is_halal else "any"))
+                
+                c_key = cuisines_lower[0] if cuisines_lower else "cafe"
+                dish_text = CUISINE_FALLBACK_DISHES.get(c_key, {}).get(diet_key, f"Multi-cuisine selection ({', '.join(r.cuisines[:2])})")
+                fallback_satisfactions.append(
+                    MemberSatisfaction(
+                        member_name=m.name or "Friend",
+                        satisfied=True,
+                        what_they_eat=f"Specialty: {dish_text}",
+                    )
                 )
-                for m in req.members
-            ]
             scored_matches.append(
                 GroupMatch(
                     rank=0,
                     restaurant=r,
                     harmony_score=85,
-                    satisfactions=satisfactions,
+                    satisfactions=fallback_satisfactions,
                     why_good_for_group=f"{r.name} in {r.location} ({r.rating:.1f}★) is a recommended group dining destination.",
                 )
             )
 
-    scored_matches.sort(key=lambda gm: (gm.harmony_score, gm.restaurant.rating, gm.restaurant.votes or 0), reverse=True)
+    scored_matches.sort(
+        key=lambda gm: (
+            gm.harmony_score,
+            gm.restaurant.rating,
+            gm.restaurant.votes or 0
+        ),
+        reverse=True,
+    )
     top_matches = scored_matches[:6]
     for idx, gm in enumerate(top_matches, start=1):
         gm.rank = idx
