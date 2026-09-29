@@ -52,6 +52,7 @@ lerna-debug.log*
 data/cache/*
 !data/cache/.gitkeep
 !data/cache/restaurants.parquet
+!data/cache/restaurants.json
 *.feather
 *.csv.gz
 

@@ -1494,24 +1494,7 @@ def _clean_cache_record(rec: Dict[str, Any]) -> Dict[str, Any]:
 
 def load_from_cache(cache_path: Path = DEFAULT_CACHE_FILE) -> Optional[List[Restaurant]]:
     """Load restaurant records from cache file if it exists."""
-    possible_paths = [
-        cache_path,
-        DATA_CACHE_DIR / "restaurants.parquet",
-        Path(__file__).resolve().parent.parent.parent / "data" / "cache" / "restaurants.parquet",
-        Path("data/cache/restaurants.parquet"),
-    ]
-    for path in possible_paths:
-        if path.exists():
-            try:
-                df = pd.read_parquet(path)
-                records = df.to_dict(orient="records")
-                restaurants = [Restaurant(**_clean_cache_record(rec)) for rec in records]
-                logger.info("Loaded %d restaurants from parquet cache: %s", len(restaurants), path)
-                return restaurants
-            except Exception as e:
-                logger.warning("Failed reading parquet cache at %s (%s)", path, e)
-
-    # JSON fallback search
+    # 1. Fast JSON loading via standard library
     possible_json_paths = [
         cache_path.with_suffix(".json"),
         DATA_CACHE_DIR / "restaurants.json",
@@ -1523,11 +1506,29 @@ def load_from_cache(cache_path: Path = DEFAULT_CACHE_FILE) -> Optional[List[Rest
             try:
                 with open(json_path, "r", encoding="utf-8") as f:
                     records = json.load(f)
-                restaurants = [Restaurant(**_clean_cache_record(rec)) for rec in records]
+                restaurants = [Restaurant(**rec) for rec in records]
                 logger.info("Loaded %d restaurants from JSON cache: %s", len(restaurants), json_path)
                 return restaurants
             except Exception as e:
                 logger.warning("Failed reading JSON cache at %s (%s)", json_path, e)
+
+    # 2. Parquet loading fallback
+    possible_parquet_paths = [
+        cache_path,
+        DATA_CACHE_DIR / "restaurants.parquet",
+        Path(__file__).resolve().parent.parent.parent / "data" / "cache" / "restaurants.parquet",
+        Path("data/cache/restaurants.parquet"),
+    ]
+    for path in possible_parquet_paths:
+        if path.exists():
+            try:
+                df = pd.read_parquet(path)
+                records = df.to_dict(orient="records")
+                restaurants = [Restaurant(**_clean_cache_record(rec)) for rec in records]
+                logger.info("Loaded %d restaurants from parquet cache: %s", len(restaurants), path)
+                return restaurants
+            except Exception as e:
+                logger.warning("Failed reading parquet cache at %s (%s)", path, e)
 
     return None
 
