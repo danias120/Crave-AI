@@ -255,7 +255,6 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
                 <span className="material-symbols-outlined">verified</span>
                 <span>{response.total_matches} Spots Found</span>
               </div>
-              <span className="dish-target-tag">Target: "{response.dish_query}"</span>
             </div>
             <p className="summary-text">{response.summary}</p>
           </div>
@@ -273,35 +272,38 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
             <div className="radar-cards-grid">
               {response.results.map((item: DishSearchResult) => (
                 <div key={item.restaurant.id} className="radar-result-card glass-panel">
-                  {/* Card Top */}
+                  {/* Card Header: Rank, Title, Veg/Halal, and Rating in one line */}
                   <div className="radar-card-header">
-                    <div className="radar-rank-pill">#{item.rank}</div>
+                    <div className="radar-title-group">
+                      <div className="radar-rank-pill">#{item.rank}</div>
+                      <h3 className="restaurant-title">{item.restaurant.name}</h3>
+                      {item.restaurant.is_veg && <span className="tag-veg">Pure Veg</span>}
+                      {isHalal && item.restaurant.is_halal && <span className="tag-halal">Halal Friendly</span>}
+                    </div>
+                    <div className="rating-badge">
+                      <span className="material-symbols-outlined filled">star</span>
+                      <span>{item.restaurant.rating.toFixed(1)}</span>
+                    </div>
                   </div>
 
                   {/* Restaurant Info */}
                   <div className="radar-card-body">
-                    <h3 className="restaurant-title">{item.restaurant.name}</h3>
-                    
                     <div className="restaurant-meta-row">
-                      <span className="rating-badge">
-                        <span className="material-symbols-outlined filled">star</span>
-                        {item.restaurant.rating.toFixed(1)}
-                      </span>
-                      <span className="meta-dot">•</span>
                       <span className="meta-item">
                         <span className="material-symbols-outlined">location_on</span>
                         {item.restaurant.location}
                       </span>
                       <span className="meta-dot">•</span>
                       <span className="meta-item">
-                        {item.restaurant.cost_for_two ? `₹${item.restaurant.cost_for_two} for two` : item.restaurant.budget_tier}
+                        <span className="material-symbols-outlined">payments</span>
+                        {item.restaurant.cost_for_two
+                          ? `₹${item.restaurant.cost_for_two.toLocaleString('en-IN')} for two`
+                          : item.restaurant.budget_tier}
                       </span>
                     </div>
 
-                    {/* Cuisines & Tags */}
+                    {/* Cuisines */}
                     <div className="restaurant-tags-row">
-                      {item.restaurant.is_veg && <span className="tag-veg">Pure Veg</span>}
-                      {isHalal && item.restaurant.is_halal && <span className="tag-halal">Halal Friendly</span>}
                       {item.restaurant.cuisines.slice(0, 3).map((c) => (
                         <span key={c} className="tag-cuisine">
                           {c}

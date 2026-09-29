@@ -501,11 +501,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
+}
+
+.radar-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  flex-wrap: wrap;
 }
 
 .radar-rank-pill {
   width: 28px;
   height: 28px;
+  min-width: 28px;
   border-radius: 50%;
   background: var(--surface-container-highest);
   color: var(--on-surface);
@@ -514,56 +525,48 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.radar-match-score {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(233, 196, 0, 0.15);
-  border: 1px solid rgba(233, 196, 0, 0.3);
-  color: var(--gold);
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.radar-match-score span {
-  font-size: 14px;
+  flex-shrink: 0;
 }
 
 .restaurant-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--on-surface);
   line-height: 1.3;
-}
-
-.restaurant-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--on-surface-variant);
-  margin-top: 4px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rating-badge {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background: #234d20;
-  color: #a5d6a7;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  color: var(--gold);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
   font-weight: 700;
-  font-size: 12px;
+  font-size: 12.5px;
+  flex-shrink: 0;
 }
 
-.rating-badge span {
+.rating-badge span.material-symbols-outlined {
   font-size: 14px;
+  color: var(--gold);
+}
+
+.restaurant-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  margin-top: 2px;
+  flex-wrap: wrap;
 }
 
 .meta-dot {
@@ -573,11 +576,11 @@
 .meta-item {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
-.meta-item span {
-  font-size: 14px;
+.meta-item span.material-symbols-outlined {
+  font-size: 15px;
 }
 
 .restaurant-tags-row {
