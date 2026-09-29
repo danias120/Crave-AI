@@ -1,8 +1,10 @@
 """FastAPI route handlers for Dish Radar, Compare, Roulette, Group Dining, and Trails."""
 
+import logging
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
+from src.api.dependencies import get_store
 from src.data.store import RestaurantStore
 from src.models.features import (
     CompareRequest,
@@ -24,42 +26,61 @@ from src.services.features_service import (
     spin_roulette_service,
 )
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api", tags=["Advanced Features"])
 
 
-def _get_store(request: Request) -> RestaurantStore:
-    store = getattr(request.app.state, "store", None)
-    if store is None:
-        raise HTTPException(status_code=503, detail="RestaurantStore is not initialized yet.")
-    return store
-
-
 @router.post("/dish-search", response_model=DishSearchResponse)
-def search_dishes_endpoint(req: DishSearchRequest, request: Request):
+def search_dishes_endpoint(
+    req: DishSearchRequest,
+    store: RestaurantStore = Depends(get_store),
+):
     """Search for restaurants excelling at a specific dish or craving."""
-    store = _get_store(request)
-    return search_dishes_service(store, req)
+    try:
+        return search_dishes_service(store, req)
+    except Exception as err:
+        logger.exception("Dish search failed: %s", err)
+        raise HTTPException(status_code=500, detail=f"Dish search failed: {str(err)}")
 
 
 @router.post("/compare", response_model=CompareResponse)
-def compare_restaurants_endpoint(req: CompareRequest, request: Request):
+def compare_restaurants_endpoint(
+    req: CompareRequest,
+    store: RestaurantStore = Depends(get_store),
+):
     """Perform side-by-side comparison of two restaurants with an AI verdict."""
-    store = _get_store(request)
-    return compare_restaurants_service(store, req)
+    try:
+        return compare_restaurants_service(store, req)
+    except Exception as err:
+        logger.exception("Compare failed: %s", err)
+        raise HTTPException(status_code=500, detail=f"Compare failed: {str(err)}")
 
 
 @router.post("/roulette", response_model=RouletteResponse)
-def spin_roulette_endpoint(req: RouletteRequest, request: Request):
+def spin_roulette_endpoint(
+    req: RouletteRequest,
+    store: RestaurantStore = Depends(get_store),
+):
     """Spin the Crave Roulette for a surprise top-rated dining spot."""
-    store = _get_store(request)
-    return spin_roulette_service(store, req)
+    try:
+        return spin_roulette_service(store, req)
+    except Exception as err:
+        logger.exception("Roulette spin failed: %s", err)
+        raise HTTPException(status_code=500, detail=f"Roulette spin failed: {str(err)}")
 
 
 @router.post("/group-recommendations", response_model=GroupDiningResponse)
-def group_dining_endpoint(req: GroupDiningRequest, request: Request):
+def group_dining_endpoint(
+    req: GroupDiningRequest,
+    store: RestaurantStore = Depends(get_store),
+):
     """Find group dining recommendations that harmonize conflicting tastes."""
-    store = _get_store(request)
-    return solve_group_dining_service(store, req)
+    try:
+        return solve_group_dining_service(store, req)
+    except Exception as err:
+        logger.exception("Group dining solver failed: %s", err)
+        raise HTTPException(status_code=500, detail=f"Group dining failed: {str(err)}")
 
 
 @router.get("/trails", response_model=List[FoodTrail])
@@ -71,10 +92,9 @@ def get_trails_endpoint():
 @router.get("/restaurants/search", response_model=List[Restaurant])
 def search_restaurants_quick(
     q: str = Query(..., min_length=1),
-    request: Request = None,
+    store: RestaurantStore = Depends(get_store),
 ):
     """Quick search for restaurant names (useful for auto-complete and compare selectors)."""
-    store = _get_store(request)
     q_lower = q.strip().lower()
     matches = []
     for r in store.get_all():

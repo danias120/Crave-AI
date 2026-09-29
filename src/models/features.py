@@ -78,7 +78,7 @@ class GroupMember(BaseModel):
 
 class GroupDiningRequest(BaseModel):
     location: str = Field(..., description="Meeting locality")
-    members: List[GroupMember] = Field(..., min_length=2, description="Group members list")
+    members: List[GroupMember] = Field(..., min_length=1, description="Group members list")
 
 
 class MemberSatisfaction(BaseModel):
