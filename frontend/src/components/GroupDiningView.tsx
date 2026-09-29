@@ -94,10 +94,6 @@ const GroupDiningView: React.FC<Props> = ({ locations }) => {
     <div className="group-dining-view">
       {/* Hero Header */}
       <div className="group-header">
-        <div className="group-badge">
-          <span className="material-symbols-outlined">groups</span>
-          <span>GROUP HARMONY SOLVER</span>
-        </div>
         <h1 className="headline-xl">
           End Group <span className="brand-gradient-text">Dining Disputes</span>
         </h1>
@@ -229,7 +225,7 @@ const GroupDiningView: React.FC<Props> = ({ locations }) => {
             {isLoading ? (
               <>
                 <div className="btn-spinner" />
-                <span>Finding Group Harmony...</span>
+                <span>Finding Group Recommendations...</span>
               </>
             ) : (
               <>
@@ -280,20 +276,6 @@ const GroupDiningView: React.FC<Props> = ({ locations }) => {
                         <span>•</span>
                         <span>{match.restaurant.cost_for_two ? `₹${match.restaurant.cost_for_two} for two` : match.restaurant.budget_tier}</span>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Harmony Score Meter */}
-                  <div className="harmony-meter-box">
-                    <div className="harmony-percent-tag">
-                      <span className="material-symbols-outlined">military_tech</span>
-                      <span>{match.harmony_score}% Harmony</span>
-                    </div>
-                    <div className="harmony-bar-track">
-                      <div
-                        className="harmony-bar-fill"
-                        style={{ width: `${match.harmony_score}%` }}
-                      />
                     </div>
                   </div>
                 </div>

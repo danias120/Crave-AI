@@ -82,10 +82,6 @@ const RouletteView: React.FC<Props> = ({ locations }) => {
     <div className="roulette-view">
       {/* Hero Header */}
       <div className="roulette-header">
-        <div className="roulette-badge">
-          <span className="material-symbols-outlined">casino</span>
-          <span>CRAVE ROULETTE ENGINE</span>
-        </div>
         <h1 className="headline-xl">
           End <span className="brand-gradient-text">Decision Paralysis</span>
         </h1>
@@ -242,7 +238,7 @@ const RouletteView: React.FC<Props> = ({ locations }) => {
                 {winner.restaurant.cost_for_two ? `₹${winner.restaurant.cost_for_two} for two` : winner.restaurant.budget_tier}
               </span>
               {winner.restaurant.is_veg && <span className="meta-chip veg-chip">Pure Veg</span>}
-              {winner.restaurant.is_halal && <span className="meta-chip halal-chip">Halal Friendly</span>}
+              {isHalal && winner.restaurant.is_halal && <span className="meta-chip halal-chip">Halal Friendly</span>}
             </div>
           </div>
 

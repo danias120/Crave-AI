@@ -142,7 +142,12 @@ const App: React.FC = () => {
                       {result.summary && <ResultsSummary summary={result.summary} />}
                       <div className="cards-grid">
                         {result.recommendations.map((rec, idx) => (
-                          <RecommendationCard key={rec.restaurant.id} rec={rec} index={idx} />
+                          <RecommendationCard
+                            key={rec.restaurant.id}
+                            rec={rec}
+                            index={idx}
+                            isHalalSelected={Boolean(lastPrefs?.additional_preferences?.toLowerCase().includes('halal'))}
+                          />
                         ))}
                       </div>
                     </div>

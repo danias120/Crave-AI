@@ -6,6 +6,7 @@ import './RecommendationCard.css';
 interface Props {
   rec: Recommendation;
   index: number;
+  isHalalSelected?: boolean;
 }
 
 function renderStars(rating: number): string {
@@ -20,7 +21,7 @@ function formatCost(cost: number | null): string {
   return `₹${cost.toLocaleString('en-IN')} for two`;
 }
 
-const RecommendationCard: React.FC<Props> = ({ rec, index }) => {
+const RecommendationCard: React.FC<Props> = ({ rec, index, isHalalSelected }) => {
   const { restaurant, explanation, rank } = rec;
 
   return (
@@ -44,7 +45,7 @@ const RecommendationCard: React.FC<Props> = ({ rec, index }) => {
                 <span>Pure Veg</span>
               </span>
             )}
-            {restaurant.is_halal && (
+            {isHalalSelected && restaurant.is_halal && (
               <span className="halal-badge" title="Halal Certified / Halal Friendly">
                 <span>Halal Friendly</span>
               </span>

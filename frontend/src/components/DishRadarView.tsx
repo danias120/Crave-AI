@@ -73,10 +73,6 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
     <div className="dish-radar-view">
       {/* Hero Header */}
       <div className="radar-header">
-        <div className="radar-badge">
-          <span className="material-symbols-outlined radar-spin-icon">radar</span>
-          <span>DISH RADAR SCANNER</span>
-        </div>
         <h1 className="headline-xl">
           Search Bangalore by <span className="brand-gradient-text">Specific Craving</span>
         </h1>
@@ -280,10 +276,6 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
                   {/* Card Top */}
                   <div className="radar-card-header">
                     <div className="radar-rank-pill">#{item.rank}</div>
-                    <div className="radar-match-score">
-                      <span className="material-symbols-outlined">bolt</span>
-                      <span>{item.relevance_score}% Match</span>
-                    </div>
                   </div>
 
                   {/* Restaurant Info */}
@@ -309,7 +301,7 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
                     {/* Cuisines & Tags */}
                     <div className="restaurant-tags-row">
                       {item.restaurant.is_veg && <span className="tag-veg">Pure Veg</span>}
-                      {item.restaurant.is_halal && <span className="tag-halal">Halal Friendly</span>}
+                      {isHalal && item.restaurant.is_halal && <span className="tag-halal">Halal Friendly</span>}
                       {item.restaurant.cuisines.slice(0, 3).map((c) => (
                         <span key={c} className="tag-cuisine">
                           {c}
