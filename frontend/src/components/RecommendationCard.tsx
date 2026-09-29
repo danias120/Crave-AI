@@ -38,7 +38,9 @@ const RecommendationCard: React.FC<Props> = ({ rec, index, isHalalSelected }) =>
         {/* Header row */}
         <div className="card-header">
           <div className="card-title-group">
-            <h3 className="headline-lg card-name">{restaurant.name}</h3>
+            <h3 className="headline-lg card-name" title={restaurant.name}>
+              {restaurant.name}
+            </h3>
             {restaurant.is_veg && (
               <span className="veg-badge" title="Pure Vegetarian">
                 <span className="veg-badge-dot" />

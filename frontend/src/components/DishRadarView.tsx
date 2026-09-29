@@ -272,13 +272,16 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
             <div className="radar-cards-grid">
               {response.results.map((item: DishSearchResult) => (
                 <div key={item.restaurant.id} className="radar-result-card glass-panel">
-                  {/* Card Header: Rank, Title, Veg/Halal, and Rating in one line */}
+                  {/* Card Header: Rank, Title, and Rating in one single line */}
                   <div className="radar-card-header">
                     <div className="radar-title-group">
                       <div className="radar-rank-pill">#{item.rank}</div>
-                      <h3 className="restaurant-title">{item.restaurant.name}</h3>
-                      {item.restaurant.is_veg && <span className="tag-veg">Pure Veg</span>}
-                      {isHalal && item.restaurant.is_halal && <span className="tag-halal">Halal Friendly</span>}
+                      <h3
+                        className="restaurant-title"
+                        title={item.restaurant.name}
+                      >
+                        {item.restaurant.name}
+                      </h3>
                     </div>
                     <div className="rating-badge">
                       <span className="material-symbols-outlined filled">star</span>
@@ -302,8 +305,10 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
                       </span>
                     </div>
 
-                    {/* Cuisines */}
+                    {/* Cuisines & Tags */}
                     <div className="restaurant-tags-row">
+                      {item.restaurant.is_veg && <span className="tag-veg">Pure Veg</span>}
+                      {isHalal && item.restaurant.is_halal && <span className="tag-halal">Halal Friendly</span>}
                       {item.restaurant.cuisines.slice(0, 3).map((c) => (
                         <span key={c} className="tag-cuisine">
                           {c}
