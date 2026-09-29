@@ -1,150 +1,135 @@
-# 🚀 Crave AI — Streamlit Deployment Plan
+# 🚀 Crave AI — Fullstack Vercel Deployment Plan
 
-This document outlines the end-to-end strategy, architecture, and step-by-step execution plan for deploying **Crave AI** as an interactive, production-ready web application on **Streamlit Community Cloud** (or Hugging Face Spaces).
+This document outlines the architecture, configuration, and step-by-step deployment guide for deploying **Crave AI** as a high-performance, fullstack web application on **Vercel** (React/Vite Frontend + Serverless Python FastAPI Backend).
 
 ---
 
 ## 📌 1. Architecture Overview
 
-### Why Streamlit?
-Streamlit allows the entire Crave AI engine (Deterministic Stage-1 Filter, In-Memory `RestaurantStore`, and Gemini 2.5 Flash LLM Reasoner) to run in a single, high-performance, Python-native environment without needing separate node/vite servers or external orchestration.
-
 ```mermaid
 flowchart TD
-    subgraph Streamlit Cloud Runtime
-        A[User Browser] <--> B[streamlit_app.py]
-        B <--> C["@st.cache_resource<br/>RestaurantStore (9,254 Dataset)"]
-        B <--> D["Deterministic Filter &<br/>Feature Services"]
-        D <--> E["Gemini 2.5 Flash LLM<br/>(via st.secrets['GEMINI_API_KEY'])"]
+    subgraph Vercel Cloud Platform
+        A[User Browser] <--> B[Global Edge CDN]
+        B -->|Static Assets & SPA Routes| C["Vite + React Frontend<br/>(Outfit & Inter Fonts, Dark Glassmorphism)"]
+        B -->|/api/* Requests| D["Serverless FastAPI Handler<br/>(api/index.py)"]
+        D <--> E["In-Memory RestaurantStore<br/>(9,254 Bangalore Spots)"]
+        D <--> F["Google Gemini 2.5 Flash LLM<br/>(via GEMINI_API_KEY)"]
     end
 ```
 
----
-
-## 🛠️ 2. Core Components to Implement
-
-### A. `streamlit_app.py` (Main Application Entry Point)
-A multi-tab Streamlit dashboard offering the 4 core experiences:
-
-1. **🔍 Discover (AI Food Discovery)**:
-   - Sidebar/Panel with: Neighborhood select, Budget Tier radio, Cuisine dropdown (A-Z sorted), Min Rating slider, **Pure Veg toggle**, and **Halal Friendly toggle / Additional preferences**.
-   - Output: AI Summary banner, candidate count metrics, and styled recommendation cards with explanations.
-
-2. **🍜 Dish Radar**:
-   - Dish craving search input + Quick chips (*Tonkotsu Ramen, Yemeni Mandi, Masala Dosa, Basque Cheesecake, Mutton Shawarma, Korean Bingsu*).
-   - Output: Matched dish quote, relevance score, and restaurant rating/location.
-
-3. **🎲 Crave Roulette**:
-   - Location + Budget + Veg/Halal filters.
-   - Big animated "Spin Roulette 🎲" action button.
-   - Output: Winner reveal card with **Must-Order Dish**, **Why It Won Tonight**, and **Insider Pro Foodie Tip**.
-
-4. **👥 Group Dining Solver**:
-   - Dynamic friend list builder (Friend name, diet rule, specific craving).
-   - Preset buttons (*Veggie + Halal Duo*, *4-Way Squad Dilemma*).
-   - Output: Harmony verdict banner, 0–100% group harmony score meter, and personalized meal recommendations per friend.
+### Key Advantages:
+* **Single Domain & Zero CORS Issues**: Frontend and Backend live under the exact same domain (e.g., `https://crave-ai.vercel.app`).
+* **Instant Static Delivery**: React bundle with modern glassmorphism, Google Fonts, and micro-animations served globally via Vercel Edge Network.
+* **Auto-Scaling Serverless API**: Python FastAPI routes (`/api/recommendations`, `/api/dish-search`, `/api/roulette`, `/api/group-recommendations`) scale on demand.
 
 ---
 
-### B. Styling & Theming (`.streamlit/config.toml`)
-Custom theme matching Crave AI's sleek dark aesthetic:
+## 🛠️ 2. Repository Configuration
 
-```toml
-[theme]
-primaryColor = "#cb202d"
-backgroundColor = "#131313"
-secondaryBackgroundColor = "#1f1f1f"
-textColor = "#e5e2e1"
-font = "sans serif"
-
-[server]
-headless = true
-enableCORS = false
-enableXsrfProtection = true
+### A. Vercel Monorepo Config (`vercel.json`)
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.py"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
 ```
 
----
-
-### C. Secrets Management (`.streamlit/secrets.toml`)
-Local development and Streamlit Cloud configuration:
-
-```toml
-GEMINI_API_KEY = "AIzaSy..."
-```
-
-In Python, the app will resolve credentials seamlessly:
+### B. Serverless Python Entrypoint (`api/index.py`)
 ```python
 import os
-import streamlit as st
+import sys
+from pathlib import Path
 
-api_key = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY"))
+# Add project root to sys.path
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from src.api.app import app
+
+__all__ = ["app"]
+```
+
+### C. Frontend API Client (`frontend/src/api/client.ts`)
+Configured to use `http://localhost:8000` during local development and relative `/` path in production:
+```typescript
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : ''),
+  timeout: 60000,
+  headers: { 'Content-Type': 'application/json' },
+});
 ```
 
 ---
 
-## 📋 3. Dependencies Configuration (`requirements.txt`)
+## 🚀 3. Step-by-Step Vercel Deployment Guide
 
-Ensure `requirements.txt` contains all runtime dependencies:
+### Step 1: Open Vercel Dashboard
+1. Go to [vercel.com](https://vercel.com) and log in with your GitHub account (`danias120`).
 
-```text
-streamlit>=1.38.0
-pandas>=2.0.0
-pyarrow>=14.0.0
-google-generativeai>=0.8.0
-pydantic>=2.0.0
-python-dotenv>=1.0.0
-fastapi>=0.110.0
-uvicorn>=0.28.0
-pytest>=8.0.0
-```
+### Step 2: Import the GitHub Repository
+1. Click **"Add New..."** ➔ **"Project"**.
+2. Find and select **`danias120/Zomato-Milstone1`** (or `danias120/Crave-AI`).
 
----
+### Step 3: Project Configuration
+* **Framework Preset**: Leave as default (`Vite` / Other).
+* **Root Directory**: `./` (leave default).
+* **Build Command**: Automatically read from `vercel.json`.
+* **Output Directory**: Automatically read from `vercel.json`.
 
-## 🚀 4. Step-by-Step Streamlit Cloud Deployment Guide
-
-### Step 1: Push `streamlit_app.py` & `.streamlit/config.toml` to GitHub
-Ensure all Streamlit code and configuration are committed to your repo `danias120/Zomato-Milstone1` on branch `main`.
-
-### Step 2: Connect Streamlit Community Cloud
-1. Navigate to [share.streamlit.io](https://share.streamlit.io).
-2. Sign in with your GitHub account (`danias120`).
-3. Click **"New app"** (or **"Create app"**).
-
-### Step 3: Configure Repository Settings
-* **Repository**: `danias120/Zomato-Milstone1`
-* **Branch**: `main`
-* **Main file path**: `streamlit_app.py`
-* **App URL** (Optional custom subdomain): `crave-ai-bangalore.streamlit.app`
-
-### Step 4: Configure App Secrets
-1. Click **"Advanced settings..."** before deploying (or go to **Settings > Secrets** in the app dashboard).
-2. Add your Gemini API key in TOML format:
-   ```toml
-   GEMINI_API_KEY = "your_actual_gemini_api_key_here"
-   ```
-3. Click **Save**.
-
-### Step 5: Deploy & Monitor
-1. Click **"Deploy!"**.
-2. Streamlit Cloud will install dependencies from `requirements.txt`, load the cached dataset, and launch the live URL within 1–2 minutes.
-
----
-
-## ⚡ 5. Performance & Caching Optimizations
-
-| Optimization | Implementation | Benefit |
+### Step 4: Configure Environment Variables
+Under **Environment Variables**, add:
+| Key | Value | Description |
 | :--- | :--- | :--- |
-| **Dataset In-Memory Caching** | `@st.cache_resource` on `get_restaurant_store()` | Loads 9,254 restaurants once; subsequent queries are instantaneous (<5ms). |
-| **LLM Call Caching** | `@st.cache_data(ttl=3600)` on Gemini responses | Prevents redundant API calls for identical filter queries. |
-| **Cold Start Minimization** | Pre-bundled Parquet cache in `data/cache/` | Instant dataset hydration without remote downloads. |
+| `GEMINI_API_KEY` | `AIzaSy...` | Your Google Gemini API Key |
+
+### Step 5: Click "Deploy"
+Vercel will compile the React bundle and deploy the Python Serverless function. Your app will be live within ~1 minute!
 
 ---
 
-## 🛡️ 6. Verification & Launch Checklist
+## 🧪 4. Local Testing & Verification
 
-- [ ] `streamlit_app.py` runs locally with `streamlit run streamlit_app.py`.
-- [ ] All 4 tabs (Discover, Dish Radar, Roulette, Group Dining) function without errors.
-- [ ] Pure Veg and Halal Friendly filters correctly isolate eligible restaurants.
-- [ ] Missing API key displays a friendly error banner instructing user to add key.
-- [ ] Responsive on mobile and tablet viewport sizes.
-- [ ] Streamlit Cloud deployment build passes with green health status.
+### Running Fullstack Locally:
+
+1. **Start Backend (FastAPI)**:
+   ```bash
+   uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+2. **Start Frontend (Vite React)**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+3. **Run Unit & Integration Tests**:
+   ```bash
+   .venv/bin/pytest
+   ```
