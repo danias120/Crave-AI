@@ -16,7 +16,7 @@ if str(ROOT_DIR) not in sys.path:
 from src.data.store import RestaurantStore
 from src.models.preferences import UserPreferences
 from src.models.features import DishSearchRequest, RouletteRequest, GroupDiningRequest, GroupMember
-from src.services.orchestrator import Orchestrator
+from src.services.orchestrator import get_recommendations
 from src.services.features_service import (
     search_dishes_service,
     spin_roulette_service,
@@ -139,10 +139,6 @@ def get_gemini_client() -> GeminiClient:
     api_key = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY"))
     return GeminiClient(api_key=api_key)
 
-@st.cache_resource
-def get_orchestrator() -> Orchestrator:
-    return Orchestrator(store=get_store(), gemini_client=get_gemini_client())
-
 store = get_store()
 locations = store.distinct_locations()
 cuisines = store.distinct_cuisines()
@@ -214,8 +210,11 @@ with tab_discover:
                     additional_preferences=final_notes or None,
                     is_veg_only=is_veg,
                 )
-                orchestrator = get_orchestrator()
-                res = orchestrator.recommend(prefs)
+                res = get_recommendations(
+                    store=store,
+                    prefs=prefs,
+                    gemini_client=get_gemini_client(),
+                )
 
                 if res.summary:
                     st.markdown(
