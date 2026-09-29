@@ -188,7 +188,9 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
                 checked={isVegOnly}
                 onChange={(e) => setIsVegOnly(e.target.checked)}
               />
-              <span className="veg-dot" />
+              <span className="veg-og-symbol">
+                <span className="veg-og-dot" />
+              </span>
               <span>Pure Veg Only</span>
             </label>
 
@@ -199,7 +201,6 @@ const DishRadarView: React.FC<Props> = ({ locations }) => {
                 checked={isHalal}
                 onChange={(e) => setIsHalal(e.target.checked)}
               />
-              <span className="halal-dot" />
               <span>Halal Friendly</span>
             </label>
 

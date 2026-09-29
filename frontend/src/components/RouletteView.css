@@ -104,24 +104,36 @@
   display: none;
 }
 
-.roulette-toggle .veg-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #2e7d32;
+.roulette-toggle .veg-og-symbol {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #2e7d32;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.roulette-toggle .halal-dot {
-  width: 8px;
-  height: 8px;
+.roulette-toggle .veg-og-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #0288d1;
+  background: #2e7d32;
 }
 
 .roulette-toggle.active {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.2);
   color: var(--on-surface);
+}
+
+.roulette-toggle.active .veg-og-symbol {
+  border-color: #4caf50;
+}
+
+.roulette-toggle.active .veg-og-dot {
+  background: #4caf50;
 }
 
 /* Arena Wheel Card */
