@@ -18,18 +18,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Load RestaurantStore on startup, clean up on shutdown."""
-    logger.info("Loading RestaurantStore...")
-    store = RestaurantStore()
-    count = len(store.get_all())
-    logger.info("RestaurantStore loaded with %d restaurants.", count)
-    app.state.store = store
-    yield
-    logger.info("Shutting down Crave AI API.")
-
-
 app = FastAPI(
     title="Crave AI — Restaurant Recommendation API",
     description=(
@@ -38,7 +26,6 @@ app = FastAPI(
         "ranked recommendations with AI-generated explanations."
     ),
     version="1.0.0",
-    lifespan=lifespan,
 )
 
 # CORS — allow Vite dev server and common local origins
